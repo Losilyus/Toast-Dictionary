@@ -1,8 +1,8 @@
 <script>
-  import Table from './components/table/Table.svelte';
+  import Table from "./components/table/Table.svelte";
   import { writable, get } from "svelte/store";
   let year = new Date();
-  
+
   let modalVisiblity = false,
     loginVisiblity = false;
 
@@ -85,35 +85,33 @@
   }
 
   async function login() {
-    let userPass = resData.config[0].password;
-    const { value: password } = await Swal.fire({
-      title: "Enter your password",
-      input: "password",
-      inputLabel: "Password",
-      inputPlaceholder: "Enter your password",
-      inputAttributes: {
-        maxlength: 10,
-        autocapitalize: "off",
-        autocorrect: "off",
-      },
-    });
+    // let userPass = resData.config[0].password;
+    // const { value: password } = await Swal.fire({
+    //   title: "Enter your password",
+    //   input: "password",
+    //   inputLabel: "Password",
+    //   inputPlaceholder: "Enter your password",
+    //   inputAttributes: {
+    //     maxlength: 10,
+    //     autocapitalize: "off",
+    //     autocorrect: "off",
+    //   },
+    // });
 
-    if (userPass == password) {
-      console.log(userPass);
-      Swal.fire(`Entered pasdsword: ${password}`);
-      modalVisiblity = true;
-    }
+    // if (userPass == password) {
+    //   console.log(userPass);
+    //   Swal.fire(`Entered pasdsword: ${password}`);
+    modalVisiblity = true;
+    // }
   }
-
-    
 </script>
 
 {#if modalVisiblity}
-  <Table/>
+  <Table />
 {:else}
   <div class="abc">
     <div class="title">
-      <br/>
+      <br />
       <h1 style="cursor: pointer;" on:click={login}>Toast Dictionary</h1>
     </div>
     <section class="project-cont">
@@ -169,19 +167,18 @@
       <span class="nt">Copyright © {year.getFullYear()} Losilyus</span>
     </footer>
   </div>
+  <link
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+    crossorigin="anonymous"
+  />
+  <link
+    href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    rel="stylesheet"
+    crossorigin="anonymous"
+  />
 {/if}
-
-<link
-  href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-  rel="stylesheet"
-  integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
-  crossorigin="anonymous"
-/>
-<link
-  href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
-  rel="stylesheet"
-  crossorigin="anonymous"
-/>
 
 <style>
   .bmc-button img {
