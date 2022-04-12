@@ -1,18 +1,8 @@
 <script>
+  import Table from './components/table/Table.svelte';
   import { writable, get } from "svelte/store";
   let year = new Date();
-    const apiURL = "https://randomuser.me/api/";
-    import { onMount } from "svelte";
-    import { fade, fly } from 'svelte/transition';
-    import { flip } from 'svelte/animate';
-		import Search from './Search.svelte';
-    let users = [];
-    $:filteredUsers = users;
-    
-	 	onMount(() => {
-			getUsers();
-		});
-
+  
   let modalVisiblity = false,
     loginVisiblity = false;
 
@@ -115,85 +105,15 @@
     }
   }
 
-  
     
-    const getUsers = () => {
-        let getFrom = "&results=20&inc=name,location,email,cell,picture";
-        fetch(`${apiURL}?${getFrom}`)
-            .then(res => res.json())
-            .then((data) => users = data.results);
-    };
-    
-    const deleteUser = (user) => {
-        let itemIdx = filteredUsers.findIndex(x => x == user);
-        filteredUsers.splice(itemIdx,1);
-        filteredUsers = filteredUsers;
-    }
-	
-		const filterUsers = (e) => {
-				const searchTerm = e.detail
-        if(searchTerm) {
-            filteredUsers = users.filter(user => {
-                return user.name.first.toLowerCase().includes(searchTerm.toLowerCase())
-                    || user.name.last.toLowerCase().includes(searchTerm.toLowerCase())
-                    || user.location.city.toLowerCase().includes(searchTerm.toLowerCase());
-            });
-        }
-    }
 </script>
 
 {#if modalVisiblity}
-  <div class="container-fluid">
-    <div class="card bg-light mb-2 overflow-hidden">
-      <div class="card-header px-2 py-0 d-flex">
-        <h6 class="text-dark m-0 align-self-center">Members Area</h6>
-      </div>
-      <Search on:search={filterUsers} />
-      {#if filteredUsers.length > 0}
-        <table class="table users-table m-0">
-          <thead>
-            <tr>
-              <th class="text-right">#</th>
-              <th>Name</th>
-              <th>Lives in</th>
-              <th class="text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each filteredUsers as user, index (user)}
-              <tr transition:fly={{ x: -100, duration: 200 }}>
-                <td class="text-right">{index + 1}</td>
-                <td>
-                  <img
-                    src={user.picture.thumbnail}
-                    alt="{user.name.first} {user.name.last}"
-                    class="rounded-circle"
-                  />
-                  {user.name.first}
-                  {user.name.last}
-                </td>
-                <td>{user.location.city}</td>
-                <td class="text-right">
-                  <button
-                    class="btn btn-sm btn-secondary"
-                    on:click={deleteUser(user)}
-                  >
-                    <i class="fa fa-trash" aria-hidden="true" />
-                  </button>
-                </td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
-      {:else}
-        <p class="text-center text-muted my-3">No members found</p>
-      {/if}
-    </div>
-  </div>
+  <Table/>
 {:else}
   <div class="abc">
     <div class="title">
-      <br />
+      <br/>
       <h1 style="cursor: pointer;" on:click={login}>Toast Dictionary</h1>
     </div>
     <section class="project-cont">
