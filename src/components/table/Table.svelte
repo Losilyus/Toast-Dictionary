@@ -1,15 +1,25 @@
 <script>
-  ////https://svelte.dev/repl/9dd977413bb24c769e12cd8dd1063eff?version=3.44.3
+  //https://svelte.dev/repl/9dd977413bb24c769e12cd8dd1063eff?version=3.44.3
   import { onMount } from "svelte";
+  import { writable, get } from "svelte/store";
+
+  var localTableData = [];
+
+  const tableData = writable();
+
+  tableData.set(localStorage.getItem("data"));
+  var dataRes = get(tableData);
+
+  const resTableData = JSON.parse(dataRes);
+  localTableData = resTableData.unitOne.content;
 
   onMount(() => {
-    console.log("onMount");
+    console.log("tost");
   });
 </script>
 
 
 <div class="flex h-screen bg-gray-50 dark:bg-gray-900">
-      
       <div class="flex flex-col flex-1 w-full">
         
         <main class="h-full pb-16 overflow-y-auto">
@@ -18,10 +28,27 @@
               Tables
             </h2>
 
-            <!-- With actions -->
-            <h4 class="mb-4 text-lg font-semibold text-gray-600 dark:text-gray-300">
-              Toast 
-            </h4>
+            <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+
+              <div class="flex">
+                <div class="flex-wrap w-full">
+                  <label class="mt-4 text-sm">
+                    <span class="text-gray-700 dark:text-gray-400">
+                      Select unit
+                    </span>
+                    <select class="w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray">
+                      <option>Unit One</option>
+                    </select>
+                  </label>
+                </div>
+                <div class=" w-full ml-2">
+                  
+                </div>
+              </div>
+
+
+            </div>
+
             <div class="w-full overflow-hidden rounded-lg shadow-xs">
               <div class="w-full overflow-x-auto">
                 <table class="w-full whitespace-no-wrap">
@@ -40,29 +67,64 @@
                         <div class="flex items-center text-sm">
                           <div>
                             <p class="text-xl text-gray-600 dark:text-gray-400">
-                              Mom
+                              <input class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="Jane Doe">
                             </p>
                           </div>
                         </div>
                       </td>
-                      <td class="px-4 py-3 text-gray-600 text-xl">
-                        Anne
+                      <td class="px-4 py-3 text-gray-600 text-lg">
+                        <input class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="Jane Doe">
                       </td>
                       <td class="px-4 py-3 text-gray-600 text-l">
-                       My mom is beautiful. 
+                        <input class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="Jane Doe">
                       </td>
                       <td class="px-4 py-3 text-sm">
                         <span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">
-                          Approved
+                          {resTableData.unitOne.config[0].name}
                         </span>
                       </td>
                       <td class="px-4 py-3">
                         <div class="flex items-center space-x-4 text-sm">
                           <button class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray" aria-label="Edit">
-                            <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+                            <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" stroke="none" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                             </svg>
                           </button>
+                        </div>
+                      </td>
+                    </tr>
+                    {#each localTableData as word}
+                    <tr class="text-gray-700 dark:text-gray-400">
+                      <td class="px-4 py-3">
+                        <div class="flex items-center text-sm">
+                          <div>
+                            <p class="text-xl text-gray-600 dark:text-gray-400">
+                              {word.ing}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-4 py-3 text-gray-600 text-lg">
+                        {word.tr}
+                      </td>
+                      <td class="px-4 py-3 text-gray-600 text-l">
+                        {word.sentence}
+                      </td>
+                      <td class="px-4 py-3 text-sm">
+                        <span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">
+                          {resTableData.unitOne.config[0].name}
+                        </span>
+                      </td>
+                      <td class="px-4 py-3">
+                        <div class="flex items-center space-x-4 text-sm">
+                        <!--
+                          <button class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray" aria-label="Edit">
+                            <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                          </button>
+                        -->
                           <button class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray" aria-label="Delete">
                             <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
                               <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
@@ -71,6 +133,8 @@
                         </div>
                       </td>
                     </tr>
+                    {/each}
+
                   </tbody>
                 </table>
               </div>

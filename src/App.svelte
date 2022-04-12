@@ -1,8 +1,13 @@
 <script>
+  import { onMount } from "svelte";
   import Table from "./components/table/Table.svelte";
   import { writable, get } from "svelte/store";
   let year = new Date();
 
+///  onMount(() => {
+///    modalVisiblity=true;
+///  });
+ 
   let modalVisiblity = false,
     loginVisiblity = false;
 
@@ -12,43 +17,51 @@
         password: "123456",
       },
     ],
-    unitOne: [
-      {
-        ing: "car",
-        tr: "araba",
-        sentence: "my car is very fast.",
-      },
-      {
-        ing: "apple",
-        tr: "elma",
-        sentence: "my apple is beautiful.",
-      },
-      {
-        ing: "pee",
-        tr: "çiş",
-        sentence: "Merve wants to take my pee off my hand.",
-      },
-      {
-        ing: "Mother",
-        tr: "Anne",
-        sentence: "Fahrettin loves Merve mother very very much.",
-      },
-      {
-        ing: "Grandmother",
-        tr: "Büyükanne",
-        sentence: "Fahrettin loves Merve Grandmother very very much.",
-      },
-      {
-        ing: "Pencil",
-        tr: "Kalem",
-        sentence: "Fahrettin broke Merve pen.",
-      },
-      {
-        ing: "Pencil case",
-        tr: "Kalem kutu",
-        sentence: "My pencil case more beautiful.",
-      },
-    ],
+    unitOne: {
+      config: [
+        {
+          name: "Unit One",
+        },
+      ],
+      content: [
+        {
+          ing: "car",
+          tr: "araba",
+          sentence: "my car is very fast.",
+        },
+        {
+          ing: "apple",
+          tr: "elma",
+          sentence: "my apple is beautiful.",
+        },
+        {
+          ing: "pee",
+          tr: "çiş",
+          sentence: "Merve wants to take my pee off my hand.",
+        },
+        {
+          ing: "Mother",
+          tr: "Anne",
+          sentence: "Fahrettin loves Merve mother very very much.",
+        },
+        {
+          ing: "Grandmother",
+          tr: "Büyükanne",
+          sentence: "Fahrettin loves Merve grandmother very very much.",
+        },
+        {
+          ing: "Pencil",
+          tr: "Kalem",
+          sentence: "Fahrettin broke Merve pen.",
+        },
+        {
+          ing: "Pencil case",
+          tr: "Kalem kutu",
+          sentence: "My pencil case more beautiful.",
+        },
+  
+      ]
+   },
   };
   localStorage.setItem("data", JSON.stringify(datas));
 
@@ -61,7 +74,7 @@
   var dataRes = get(data);
 
   const resData = JSON.parse(dataRes);
-  localData = resData.unitOne;
+  localData = resData.unitOne.content;
 
   $: visibleLocal = search
     ? localData
@@ -85,24 +98,24 @@
   }
 
   async function login() {
-    // let userPass = resData.config[0].password;
-    // const { value: password } = await Swal.fire({
-    //   title: "Enter your password",
-    //   input: "password",
-    //   inputLabel: "Password",
-    //   inputPlaceholder: "Enter your password",
-    //   inputAttributes: {
-    //     maxlength: 10,
-    //     autocapitalize: "off",
-    //     autocorrect: "off",
-    //   },
-    // });
+    let userPass = resData.config[0].password;
+    const { value: password } = await Swal.fire({
+      title: "Enter your password",
+      input: "password",
+      inputLabel: "Password",
+      inputPlaceholder: "Enter your password",
+      inputAttributes: {
+        maxlength: 10,
+        autocapitalize: "off",
+        autocorrect: "off",
+      },
+    });
 
-    // if (userPass == password) {
-    //   console.log(userPass);
-    //   Swal.fire(`Entered pasdsword: ${password}`);
+    if (userPass == password) {
+      console.log(userPass);
+      Swal.fire(`Entered pasdsword: ${password}`);
     modalVisiblity = true;
-    // }
+    }
   }
 </script>
 
