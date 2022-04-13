@@ -4,77 +4,101 @@
   import { writable, get } from "svelte/store";
   let year = new Date();
 
-///  onMount(() => {
-///    modalVisiblity=true;
-///  });
- 
+  onMount(() => {
+    modalVisiblity = true;
+  });
+
   let modalVisiblity = false,
     loginVisiblity = false;
 
-  let datas = {
+  let config = {
     config: [
       {
         password: "123456",
       },
+      {
+        unitData: ["unitOne", "unitTwo"],
+      },
     ],
-    unitOne: {
-      config: [
-        {
-          name: "Unit One",
-        },
-      ],
-      content: [
-        {
-          ing: "car",
-          tr: "araba",
-          sentence: "my car is very fast.",
-        },
-        {
-          ing: "apple",
-          tr: "elma",
-          sentence: "my apple is beautiful.",
-        },
-        {
-          ing: "pee",
-          tr: "çiş",
-          sentence: "Merve wants to take my pee off my hand.",
-        },
-        {
-          ing: "Mother",
-          tr: "Anne",
-          sentence: "Fahrettin loves Merve mother very very much.",
-        },
-        {
-          ing: "Grandmother",
-          tr: "Büyükanne",
-          sentence: "Fahrettin loves Merve grandmother very very much.",
-        },
-        {
-          ing: "Pencil",
-          tr: "Kalem",
-          sentence: "Fahrettin broke Merve pen.",
-        },
-        {
-          ing: "Pencil case",
-          tr: "Kalem kutu",
-          sentence: "My pencil case more beautiful.",
-        },
-  
-      ]
-   },
   };
-  localStorage.setItem("data", JSON.stringify(datas));
+
+  let unitOne = {
+    config: [
+      {
+        name: "Unit One",
+      },
+    ],
+    content: [
+      {
+        ing: "car",
+        tr: "araba",
+        sentence: "my car is very fast.",
+      },
+      {
+        ing: "apple",
+        tr: "elma",
+        sentence: "my apple is beautiful.",
+      },
+      {
+        ing: "pee",
+        tr: "çiş",
+        sentence: "Merve wants to take my pee off my hand.",
+      },
+      {
+        ing: "Mother",
+        tr: "Anne",
+        sentence: "Fahrettin loves Merve mother very very much.",
+      },
+      {
+        ing: "Grandmother",
+        tr: "Büyükanne",
+        sentence: "Fahrettin loves Merve grandmother very very much.",
+      },
+      {
+        ing: "Pencil",
+        tr: "Kalem",
+        sentence: "Fahrettin broke Merve pen.",
+      },
+      {
+        ing: "Pencil case",
+        tr: "Kalem kutu",
+        sentence: "My pencil case more beautiful.",
+      },
+    ],
+  };
+
+  let unitTwo = {
+    config: [
+      {
+        name: "Unit Two",
+      },
+    ],
+    content: [
+      {
+        ing: "bear",
+        tr: "ayı",
+        sentence: "Bear is me horror.",
+      },
+    ],
+  };
+
+  localStorage.setItem("config", JSON.stringify(config));
+  localStorage.setItem("unitOne", JSON.stringify(unitOne));
+  localStorage.setItem("unitTwo", JSON.stringify(unitTwo));
+
+
+  // localStorage.setItem("data", JSON.stringify(datas));
 
   let search = "search...";
   var localData = [];
 
   const data = writable();
 
-  data.set(localStorage.getItem("data"));
+  data.set(localStorage.getItem("unitOne"));
   var dataRes = get(data);
 
   const resData = JSON.parse(dataRes);
-  localData = resData.unitOne.content;
+  localData = resData.content;
 
   $: visibleLocal = search
     ? localData
@@ -114,7 +138,7 @@
     if (userPass == password) {
       console.log(userPass);
       Swal.fire(`Entered pasdsword: ${password}`);
-    modalVisiblity = true;
+      modalVisiblity = true;
     }
   }
 </script>
