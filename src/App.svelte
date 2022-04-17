@@ -1,104 +1,54 @@
 <script>
-  import { onMount } from "svelte";
   import Table from "./components/table/Table.svelte";
   import { writable, get } from "svelte/store";
-  let year = new Date();
+  import { unitSelect } from "./lib/store";
+  
+  loadControl();  
 
-  onMount(() => {
-    modalVisiblity = true;
-  });
+  function loadControl() {
+    let configDataPusher = {
+      password: "123456",
+      unitData: ["unitOne"],
+    };
+    let unitOneDataPusher = {
+      config: [
+        {
+          name: "Unit One",
+        },
+      ],
+      content: [
+        {
+          ing: "toast",
+          tr: "tost",
+          sentence: "I Love Toast.",
+        },
+        
+      ],
+    };
+    
 
-  let modalVisiblity = false,
-    loginVisiblity = false;
-
-  let config = {
-    config: [
-      {
-        password: "123456",
-      },
-      {
-        unitData: ["unitOne", "unitTwo"],
-      },
-    ],
-  };
-
-  let unitOne = {
-    config: [
-      {
-        name: "Unit One",
-      },
-    ],
-    content: [
-      {
-        ing: "car",
-        tr: "araba",
-        sentence: "my car is very fast.",
-      },
-      {
-        ing: "apple",
-        tr: "elma",
-        sentence: "my apple is beautiful.",
-      },
-      {
-        ing: "pee",
-        tr: "çiş",
-        sentence: "Merve wants to take my pee off my hand.",
-      },
-      {
-        ing: "Mother",
-        tr: "Anne",
-        sentence: "Fahrettin loves Merve mother very very much.",
-      },
-      {
-        ing: "Grandmother",
-        tr: "Büyükanne",
-        sentence: "Fahrettin loves Merve grandmother very very much.",
-      },
-      {
-        ing: "Pencil",
-        tr: "Kalem",
-        sentence: "Fahrettin broke Merve pen.",
-      },
-      {
-        ing: "Pencil case",
-        tr: "Kalem kutu",
-        sentence: "My pencil case more beautiful.",
-      },
-    ],
-  };
-
-  let unitTwo = {
-    config: [
-      {
-        name: "Unit Two",
-      },
-    ],
-    content: [
-      {
-        ing: "bear",
-        tr: "ayı",
-        sentence: "Bear is me horror.",
-      },
-    ],
-  };
-
-  localStorage.setItem("config", JSON.stringify(config));
-  localStorage.setItem("unitOne", JSON.stringify(unitOne));
-  localStorage.setItem("unitTwo", JSON.stringify(unitTwo));
+    if (!localStorage.getItem("config" || !localStorage.getItem("unitOne"))) {
+      localStorage.setItem("config", JSON.stringify(configDataPusher));
+      localStorage.setItem("unitOne", JSON.stringify(unitOneDataPusher));
+    }
+ } 
 
 
-  // localStorage.setItem("data", JSON.stringify(datas));
+  let year = new Date(),
+      unitSelects,
+      modalVisiblity = false;
+
+  
 
   let search = "search...";
-  var localData = [];
+  let localData = [];
 
-  const data = writable();
 
-  data.set(localStorage.getItem("unitOne"));
-  var dataRes = get(data);
-
-  const resData = JSON.parse(dataRes);
-  localData = resData.content;
+   function abcd() {
+    unitSelects = get(unitSelect)
+    localData = JSON.parse(localStorage.getItem(unitSelects)).content;
+  }
+  abcd();  
 
   $: visibleLocal = search
     ? localData
@@ -111,22 +61,13 @@
         .slice(0, 5)
     : localData.slice(0, 5);
 
-  function exportData() {
-    var fileBlob = new Blob([dataRes], { type: "application/octet-binary" });
-    const a = document.createElement("a");
-    const url = window.URL.createObjectURL(fileBlob);
-    a.href = url;
-    a.download = "export_data.json";
-    a.click();
-    a.remove();
-  }
 
   async function login() {
-    let userPass = resData.config[0].password;
+    let userPass = localStorage.getItem("config");
+    userPass = JSON.parse(userPass).password;
     const { value: password } = await Swal.fire({
       title: "Enter your password",
       input: "password",
-      inputLabel: "Password",
       inputPlaceholder: "Enter your password",
       inputAttributes: {
         maxlength: 10,
@@ -136,14 +77,17 @@
     });
 
     if (userPass == password) {
-      console.log(userPass);
-      Swal.fire(`Entered pasdsword: ${password}`);
       modalVisiblity = true;
     }
   }
+
+
 </script>
 
 {#if modalVisiblity}
+  <div>
+    <button on:click={() => {modalVisiblity = false; abcd()}}>X</button>
+  </div>
   <Table />
 {:else}
   <div class="abc">

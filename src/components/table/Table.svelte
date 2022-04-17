@@ -1,24 +1,95 @@
 <script>
-  //https://svelte.dev/repl/9dd977413bb24c769e12cd8dd1063eff?version=3.44.3
   import { onMount } from "svelte";
   import { writable, get } from "svelte/store";
+  import { unitSelect } from "../../lib/store";
 
-  let selected = "unitOne";
 
-  var localTableData = [];
+  let unit = JSON.parse(localStorage.getItem("config")).unitData;
 
-  let tableData;
-  var config;
+  let localDataName = ["config", ...unit],
+  localStorageData ={};
 
-  function abc() {
-    tableData = localStorage.getItem(selected);
-    config = localStorage.getItem("config");
+  localDataName.forEach((item) => 
+    localStorageData[item] = JSON.parse(localStorage.getItem(item))
+  );
+  localStorageData = JSON.stringify(localStorageData);
+ 
 
-    config = JSON.parse(config);
-    localTableData = JSON.parse(tableData);
+  let selected = unit[0],
+      newRow = {},
+      localTableData = [],
+      config,
+      files;
+
+  let unitAddInput
+
+  function change() {
+    config = JSON.parse(localStorage.getItem("config"));
+    unitSelect.set(selected)
+    localTableData = JSON.parse(localStorage.getItem(selected));
   }
 
-  abc();
+  function add() {
+    localTableData.content.push(newRow);
+    localStorage.setItem(selected, JSON.stringify(localTableData));
+    change();
+  }
+
+  function addUnit() {
+    let unitDataPusher = {
+      config: [
+        {
+          name: `${unitAddInput}`,
+        },
+      ],
+      content: [
+        {
+          ing: "toast",
+          tr: "tost",
+          sentence: "I Love Toast.",
+        },
+        
+      ],
+    };
+    config.unitData.push(unitAddInput);
+    localStorage.setItem("config", JSON.stringify(config));
+    localStorage.setItem(unitAddInput, JSON.stringify(unitDataPusher));
+    change();
+  }
+
+
+  function deleteRow(selectedRow) {
+    localTableData.content = localTableData.content.filter((row) => row !== selectedRow);
+    localStorage.setItem(selected, JSON.stringify(localTableData));
+    change();
+  }
+
+  const importData = e =>{
+    const reader = new FileReader();
+    reader.addEventListener('load', function () {
+      files = JSON.parse(this.result);
+    });
+    reader.readAsText(e.target.files[0]);
+    let objKeys = Object.keys(files);
+    objKeys.forEach((item) => {
+      localStorage.setItem(item, JSON.stringify(files[item]));
+    });
+    change();
+  }
+
+
+  function exportData() {
+    var fileBlob = new Blob([localStorageData], { type: "application/octet-binary" });
+    const a = document.createElement("a");
+    const url = window.URL.createObjectURL(fileBlob);
+    a.href = url;
+    a.download = "export_data.json";
+    a.click();
+    a.remove();
+  }
+
+  change();
+  
 </script>
 
 <div class="flex h-screen bg-gray-50 dark:bg-gray-900">
@@ -42,28 +113,12 @@
                 <div
                   class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400"
                 >
-                  <input
-                    class="block w-full pl-10 mt-1 text-sm text-black dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input"
-                    placeholder="search..."
-                  />
-                  <div
-                    class="absolute inset-y-0 flex items-center ml-3 pointer-events-none"
-                  >
-                    <svg
-                      class="w-5 h-5"
-                      aria-hidden="true"
-                      fill="none"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-
-                    </svg>
-                  </div>
+                <div class="relative text-gray-500 focus-within:text-purple-600">
+                  <input bind:value={unitAddInput} class="block w-full pr-20 mt-1 text-sm text-black dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input" placeholder="Add Unit">
+                  <button on:click={addUnit} class="absolute inset-y-0 right-0 px-4 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-r-md active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                    Add
+                  </button>
+                </div> 
                 </div>
               </label>
             </div>
@@ -73,11 +128,11 @@
                   Select unit
                 </span>
                 <select
-                  on:click={abc}
+                  on:click={change}
                   bind:value={selected}
                   class="w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
                 >
-                  {#each config.config[1].unitData as option}
+                  {#each config.unitData as option}
                     <option value={option}>{option}</option>
                   {/each}
                 </select>
@@ -87,17 +142,18 @@
         </div>
 
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
-          <div class="w-full overflow-x-auto">
-            <table class="w-full whitespace-no-wrap">
+          <div class="w-full">
+            <table class="w-full h-34 whitespace-no-wrap">
               <thead>
                 <tr
                   class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800"
                 >
-                  <th class="px-4 py-3">English</th>
-                  <th class="px-4 py-3">Turkish</th>
-                  <th class="px-4 py-3">Sentence</th>
-                  <th class="px-4 py-3">Tag</th>
-                  <th class="px-4 py-3">Actions</th>
+                    <th class="px-4 py-3">Engilish</th>
+                    <th class="px-4 py-3">Turkish</th>
+                    <th class="px-4 py-3">Sentence</th>
+                    <th class="px-4 py-3">Tag</th>
+                    <th class="px-4 py-3">Actions</th>
+                  
                 </tr>
               </thead>
               <tbody
@@ -110,7 +166,8 @@
                         <p class="text-xl text-gray-600 dark:text-gray-400">
                           <input
                             class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                            placeholder="Jane Doe"
+                            placeholder="Eng word"
+                            bind:value={newRow.ing}
                           />
                         </p>
                       </div>
@@ -119,13 +176,15 @@
                   <td class="px-4 py-3 text-gray-600 text-lg">
                     <input
                       class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                      placeholder="Jane Doe"
+                      placeholder="Tr word"
+                      bind:value={newRow.tr}
                     />
                   </td>
                   <td class="px-4 py-3 text-gray-600 text-l">
                     <input
                       class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                      placeholder="Jane Doe"
+                      placeholder="Sentence"
+                      bind:value={newRow.sentence}
                     />
                   </td>
                   <td class="px-4 py-3 text-sm">
@@ -140,6 +199,7 @@
                       <button
                         class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                         aria-label="Edit"
+                        on:click={add}
                       >
                         <svg
                           class="w-5 h-5"
@@ -195,6 +255,7 @@
                         <button
                           class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                           aria-label="Delete"
+                          on:click={() => deleteRow(word)}
                         >
                           <svg
                             class="w-5 h-5"
@@ -216,6 +277,7 @@
               </tbody>
             </table>
           </div>
+         <!--
           <div
             class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800"
           >
@@ -223,7 +285,6 @@
               Showing 21-30 of 100
             </span>
             <span class="col-span-2" />
-            <!-- Pagination -->
             <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
               <nav aria-label="Table navigation">
                 <ul class="inline-flex items-center">
@@ -312,8 +373,53 @@
               </nav>
             </span>
           </div>
+         --> 
         </div>
+
+        <div
+          class="px-4 mt-6 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800"
+        >
+          <div class="flex">
+            <div class="file flex-wrap w-full">
+              Import Data
+              <input type="file" class="hide_file" on:change={importData} name="import">
+            </div>
+
+            <div class=" w-full ml-2">
+              <button on:click={exportData} class="w-full py-3 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                Export Data
+              </button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </main>
   </div>
 </div>
+
+<style>
+  .file{
+  padding:10px; 
+  background:#7E3AF2;
+  border:1px solid #7E3AF2;
+  position:relative;
+  color:#fff;
+  border-radius:5px;
+  text-align:center;
+  float:left;
+  cursor:pointer
+}
+.hide_file {
+    position: absolute;
+    z-index: 1000;
+    opacity: 0;
+    cursor: pointer;
+    right: 0;
+    top: 0;
+    height: 100%;
+    font-size: 4px;
+    width: 100%;
+    
+}
+</style>
